@@ -10,6 +10,7 @@ namespace LlmsTxt\Http;
 use LlmsTxt\Cache\Store;
 use LlmsTxt\Cron\Scheduler;
 use LlmsTxt\Language\Catalog;
+use LlmsTxt\Language\Current_Language;
 use LlmsTxt\Settings;
 
 /**
@@ -24,8 +25,9 @@ final class Controller {
 	 * Send the document or return so WordPress can continue.
 	 */
 	public function serve(): void {
-		$match = $this->match_request();
-		if ( null === $match ) {
+		$matcher = new Request_Matcher();
+		$matched = $matcher->match( Request_Uri::original(), ( new Site_Home() )->path() );
+		if ( null === $matched ) {
 			return;
 		}
 
@@ -33,17 +35,11 @@ final class Controller {
 		if ( ! $settings['enabled'] ) {
 			$this->not_found();
 		}
-		if ( 'full' === $match['kind'] && ! $settings['full_enabled'] ) {
-			$this->not_found();
-		}
-		// One combined file ignores a /ru/ prefix. WPML removes that prefix before
-		// rewrite matching, so the original URL is the only place the language remains.
-		if ( 'paths' !== $settings['language_mode'] ) {
-			$match['language'] = null;
-		} elseif ( null !== $match['language'] && ! ( new Catalog( new Settings() ) )->detect()->has( $match['language'] ) ) {
+		if ( 'full' === $matched['kind'] && ! $settings['full_enabled'] ) {
 			$this->not_found();
 		}
 
+		$match     = $this->select_language( $matcher, $matched, $settings );
 		$key       = $match['kind'] . '_' . ( $match['language'] ?? 'root' );
 		$store     = new Store();
 		$snapshot  = $store->snapshot( $key );
@@ -63,13 +59,32 @@ final class Controller {
 	}
 
 	/**
-	 * @return array{kind:string,language:?string}|null
+	 * Language of the cached file. Query parameters cannot select it.
+	 *
+	 * The home path compared above is the stored site URL. home_url() is filtered by
+	 * WPML and Polylang, so /ru/llms.txt was reduced to /llms.txt and the root file was served.
+	 * The request URI was captured at plugin load, before that directory can be removed.
+	 * When the captured path has no directory, the current WPML or Polylang language is used
+	 * if it is a different known language.
+	 *
+	 * @param array{kind:string,language:?string} $matched  Path match against the stored home.
+	 * @param array<string, mixed>                $settings Clean settings.
+	 * @return array{kind:string,language:?string}
 	 */
-	private function match_request(): ?array {
-		$uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- only the URL path is parsed.
-		$home = (string) wp_parse_url( home_url( '/' ), PHP_URL_PATH );
-		// The path is the only input. Query parameters cannot select a language or a file.
-		return ( new Request_Matcher() )->match( $uri, $home );
+	private function select_language( Request_Matcher $matcher, array $matched, array $settings ): array {
+		if ( 'paths' !== $settings['language_mode'] ) {
+			$matched['language'] = null;
+			return $matched;
+		}
+
+		$catalog = ( new Catalog( new Settings() ) )->detect();
+		$active  = null === $matched['language'] ? ( new Current_Language() )->code() : null;
+		$match   = ( new Document_Request( $matcher ) )->apply( $matched, $active, $catalog, true );
+		if ( null !== $match['language'] && ! $catalog->has( $match['language'] ) ) {
+			$this->not_found();
+		}
+
+		return $match;
 	}
 
 	/**

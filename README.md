@@ -36,7 +36,7 @@ Automatic updates stay off. The plugin header names `https://manutemaia.com/` as
 
 ```json
 {
-  "version": "1.2.2",
+  "version": "1.2.3",
   "download_url": "https://example.com/llms-txt.zip",
   "requires": "6.4",
   "requires_php": "8.1",

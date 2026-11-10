@@ -3,7 +3,7 @@
  * Plugin Name:       LLMs.txt
  * Plugin URI:        https://manutemaia.com/
  * Description:       Generates and serves /llms.txt and /llms-full.txt for agents, following the llmstxt.org specification.
- * Version:           1.2.2
+ * Version:           1.2.3
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Author:            ManuTeMaia
@@ -19,12 +19,13 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LLMS_TXT_VERSION', '1.2.2' );
+define( 'LLMS_TXT_VERSION', '1.2.3' );
 define( 'LLMS_TXT_FILE', __FILE__ );
 define( 'LLMS_TXT_DIR', plugin_dir_path( __FILE__ ) );
 
 require_once __DIR__ . '/includes/Autoload.php';
 LlmsTxt\Autoload::register();
+LlmsTxt\Http\Request_Uri::capture();
 
 register_activation_hook( __FILE__, array( LlmsTxt\Activator::class, 'activate' ) );
 register_deactivation_hook( __FILE__, array( LlmsTxt\Deactivator::class, 'deactivate' ) );
