@@ -2,7 +2,9 @@
 
 WordPress plugin that publishes `/llms.txt` and `/llms-full.txt` for agents, following the [llmstxt.org](https://llmstxt.org/) specification.
 
-`/llms.txt` is a short curated map: an H1, a blockquote summary, an intro, and H2 sections of links or prose. `/llms-full.txt` is the clean Markdown for the pages that map includes. Both are served as `text/plain; charset=utf-8`. The plugin does not call external services and does not send telemetry.
+`/llms.txt` is a short curated map: an H1, a blockquote summary, an intro, and H2 sections of links or prose. `/llms-full.txt` is the clean Markdown for the pages that map includes. Both are served as `text/plain; charset=utf-8`. The plugin does not send telemetry. It requests an update manifest only after you save that URL.
+
+Maintained by [ManuTeMaia](https://manutemaia.com/). Contact: cath@manutemaia.com
 
 ## Requirements
 
@@ -18,7 +20,36 @@ Build an installable zip from this directory:
 bin/build-zip.sh
 ```
 
-The zip is written to `dist/llms-txt.zip`. In wp-admin, open Plugins → Add New → Upload Plugin and install that zip. You can also copy this directory to `wp-content/plugins/llms-txt` and activate **LLMs.txt**.
+The zip is written to `dist/llms-txt.zip`. Its top folder and main file are always `llms-txt/llms-txt.php`.
+
+## Update an existing site
+
+1. Optional: on Settings → LLMs.txt, use **Download settings JSON**. `wp llms settings export --file=llms-txt-settings.json` does the same.
+2. In wp-admin open **Plugins → Add New → Upload Plugin**, choose the new zip, and click **Install Now**.
+3. When WordPress says the plugin is already installed, click **Replace current with uploaded**.
+4. Activate it if WordPress did not leave it active. Existing sections and titles are kept. New settings are added empty or off.
+5. Open Settings → LLMs.txt and use **Regenerate now** if the files look stale.
+
+Do not delete the plugin in order to update. Deleting it no longer clears settings unless **Delete all data when the plugin is deleted** is checked. If a site was emptied anyway, use **Import settings** or `wp llms settings import llms-txt-settings.json`.
+
+Automatic updates stay off. The plugin header names `https://manutemaia.com/` as the update host, and WordPress asks the plugin before offering an update. Nothing is downloaded until you save an **Update manifest** URL. That JSON file can look like:
+
+```json
+{
+  "version": "1.2.1",
+  "download_url": "https://example.com/llms-txt.zip",
+  "requires": "6.4",
+  "requires_php": "8.1",
+  "tested": "7.1",
+  "homepage": "https://manutemaia.com/"
+}
+```
+
+The zip at `download_url` must still unpack to `llms-txt/llms-txt.php`.
+
+## First install
+
+In wp-admin, open Plugins → Add New → Upload Plugin and install the zip. You can also copy this directory to `wp-content/plugins/llms-txt` and activate **LLMs.txt**.
 
 Then open **Settings → LLMs.txt**.
 

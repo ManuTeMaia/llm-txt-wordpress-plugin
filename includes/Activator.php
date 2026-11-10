@@ -16,8 +16,11 @@ use LlmsTxt\Http\Rewrite;
 final class Activator {
 	public static function activate(): void {
 		$settings = new Settings();
-		if ( null === get_option( Settings::OPTION, null ) ) {
+		$stored   = get_option( Settings::OPTION, null );
+		if ( ! is_array( $stored ) ) {
 			add_option( Settings::OPTION, $settings->sanitize( Settings::defaults() ), '', true );
+		} else {
+			update_option( Settings::OPTION, $settings->sanitize( $stored ), true );
 		}
 
 		( new Rewrite() )->add_rules();

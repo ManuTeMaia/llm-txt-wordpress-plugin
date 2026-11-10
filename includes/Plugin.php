@@ -12,7 +12,9 @@ use LlmsTxt\Admin\Notices;
 use LlmsTxt\Admin\Settings_Page;
 use LlmsTxt\Cache\Invalidator;
 use LlmsTxt\Cli\Command;
+use LlmsTxt\Cli\Settings_Command;
 use LlmsTxt\Cron\Scheduler;
+use LlmsTxt\Update\Checker;
 use LlmsTxt\Http\Controller;
 use LlmsTxt\Http\Link_Header;
 use LlmsTxt\Http\Rewrite;
@@ -30,6 +32,7 @@ final class Plugin {
 		( new Link_Header() )->register_hooks();
 		( new Invalidator() )->register_hooks();
 		( new Scheduler() )->register_hooks();
+		( new Checker() )->register_hooks();
 		( new Meta_Box() )->register_hooks();
 
 		if ( is_admin() ) {
@@ -39,6 +42,7 @@ final class Plugin {
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			\WP_CLI::add_command( 'llms', Command::class );
+			\WP_CLI::add_command( 'llms settings', Settings_Command::class );
 		}
 	}
 
@@ -56,6 +60,11 @@ final class Plugin {
 		$stored = get_option( 'llms_txt_version' );
 		if ( LLMS_TXT_VERSION === $stored ) {
 			return;
+		}
+		$settings = new Settings();
+		$stored   = get_option( Settings::OPTION, null );
+		if ( is_array( $stored ) ) {
+			update_option( Settings::OPTION, $settings->sanitize( $stored ), true );
 		}
 		flush_rewrite_rules( false );
 		update_option( 'llms_txt_version', LLMS_TXT_VERSION, true );

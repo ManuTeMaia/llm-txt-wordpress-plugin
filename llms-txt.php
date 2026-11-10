@@ -1,13 +1,14 @@
 <?php
 /**
  * Plugin Name:       LLMs.txt
- * Plugin URI:        https://terav.vet/
+ * Plugin URI:        https://manutemaia.com/
  * Description:       Generates and serves /llms.txt and /llms-full.txt for agents, following the llmstxt.org specification.
- * Version:           1.1.3
+ * Version:           1.2.0
  * Requires at least: 6.4
  * Requires PHP:      8.1
- * Author:            Terav
- * Author URI:        https://terav.vet/
+ * Author:            ManuTeMaia
+ * Author URI:        https://manutemaia.com/
+ * Update URI:        https://manutemaia.com/
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       llms-txt
@@ -18,7 +19,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LLMS_TXT_VERSION', '1.1.3' );
+define( 'LLMS_TXT_VERSION', '1.2.0' );
 define( 'LLMS_TXT_FILE', __FILE__ );
 define( 'LLMS_TXT_DIR', plugin_dir_path( __FILE__ ) );
 

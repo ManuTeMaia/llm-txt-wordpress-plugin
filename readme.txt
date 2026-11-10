@@ -1,10 +1,10 @@
 === LLMs.txt ===
-Contributors: terav
+Contributors: manutemaia
 Tags: seo, ai, markdown, llms, yoast
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.1.3
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,7 +25,9 @@ Yoast meta descriptions are preferred for link notes. Yoast noindex, password-pr
 
 If a physical `llms.txt` already sits in the web root, the plugin warns you: the web server will serve that file and the dynamic one will never run. You can instead write the generated files to disk for nginx setups that do not pass `.txt` requests to PHP.
 
-A recommended robots.txt block for AI crawlers is shown in the settings. The plugin does not modify robots.txt, and it does not contact any external service.
+A recommended robots.txt block for AI crawlers is shown in the settings. The plugin does not modify robots.txt and does not send telemetry. It contacts another server only if you save an update-manifest URL.
+
+Maintained by ManuTeMaia. Contact: cath@manutemaia.com
 
 == Installation ==
 
@@ -34,7 +36,9 @@ A recommended robots.txt block for AI crawlers is shown in the settings. The plu
 3. Open Settings → LLMs.txt and review the generated preview.
 4. If a hand-written `llms.txt` exists in the web root, remove it or switch delivery to writing the files on disk and confirm the overwrite.
 
-From the command line, `wp llms regenerate` rebuilds the files and `wp llms show` prints the index.
+To update an existing install, use Plugins → Add New → Upload Plugin and choose the new zip. WordPress offers Replace current with uploaded because the zip’s folder and main file stay `llms-txt/llms-txt.php`. Do not delete the plugin first. Deleting it keeps your settings unless “Delete all data when the plugin is deleted” is on; replacing it keeps them either way. Download settings JSON from the settings screen first if you want a backup.
+
+From the command line, `wp llms regenerate` rebuilds the files, `wp llms show` prints the index, and `wp llms settings export` / `wp llms settings import` move the settings.
 
 == Frequently Asked Questions ==
 
@@ -51,6 +55,12 @@ No. Only published posts are eligible. Password-protected posts, private posts, 
 WPML is used when it is installed. Polylang is used otherwise. If neither is present, a post's language is taken from the first URL segment and the prefixes you configure. Choose one file with a section per language, or a separate file such as `/ru/llms.txt`.
 
 == Changelog ==
+
+= 1.2.0 =
+* Deleting the plugin keeps settings unless “Delete all data when the plugin is deleted” is turned on.
+* Settings can be downloaded and imported as JSON, including with `wp llms settings export` and `wp llms settings import`.
+* Activating a newer copy keeps existing settings and fills in any new fields.
+* Author and plugin links point to ManuTeMaia. Automatic updates stay off until an update-manifest URL is saved.
 
 = 1.1.3 =
 * Blog posts and ordinary pages use their own published body again. A theme-builder template is used only when it replaces the page, such as the homepage, and it is rendered in that post's language with the post set as the current query.

@@ -14,6 +14,7 @@ use LlmsTxt\Generator;
 use LlmsTxt\Http\Rewrite;
 use LlmsTxt\Language\Catalog;
 use LlmsTxt\Settings;
+use LlmsTxt\Settings_Port;
 
 /**
  * Settings screen, sanitization, and the manual rebuild action.
@@ -26,6 +27,8 @@ final class Settings_Page {
 		add_action( 'admin_post_llms_txt_regenerate', array( $this, 'regenerate' ) );
 		add_action( 'admin_post_llms_txt_flush', array( $this, 'flush_rules' ) );
 		add_action( 'admin_post_llms_txt_delete_root', array( $this, 'delete_root' ) );
+		add_action( 'admin_post_llms_txt_export', array( $this, 'export_settings' ) );
+		add_action( 'admin_post_llms_txt_import', array( $this, 'import_settings' ) );
 	}
 
 	/**
@@ -100,7 +103,13 @@ final class Settings_Page {
 			$preview_error = $exception->getMessage();
 		}
 
-		$robots = Robots_Guide::snippet();
+		$robots        = Robots_Guide::snippet();
+		$import_notice = get_transient( 'llms_txt_import_notice' );
+		if ( is_array( $import_notice ) ) {
+			delete_transient( 'llms_txt_import_notice' );
+		} else {
+			$import_notice = array();
+		}
 
 		include LLMS_TXT_DIR . 'includes/Admin/views/settings-page.php';
 	}
@@ -190,6 +199,76 @@ final class Settings_Page {
 			)
 		);
 		exit;
+	}
+
+	/**
+	 * Download the current settings as JSON.
+	 */
+	public function export_settings(): void {
+		$this->assert_manage();
+		check_admin_referer( 'llms_txt_export', 'llms_txt_nonce' );
+		$json = ( new Settings_Port( new Settings() ) )->to_json( ( new Settings() )->get(), LLMS_TXT_VERSION );
+		nocache_headers();
+		header( 'Content-Type: application/json; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="llms-txt-settings.json"' );
+		echo $json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		exit;
+	}
+
+	/**
+	 * Replace settings from an uploaded JSON export.
+	 */
+	public function import_settings(): void {
+		$this->assert_manage();
+		check_admin_referer( 'llms_txt_import', 'llms_txt_nonce' );
+		$file = $_FILES['llms_txt_import'] ?? null;
+		$redirect = admin_url( 'options-general.php?page=llms-txt' );
+		if ( ! is_array( $file ) || empty( $file['tmp_name'] ) || ! is_uploaded_file( $file['tmp_name'] ) ) {
+			$this->import_notice( 'error', __( 'Choose a JSON export to import.', 'llms-txt' ) );
+			wp_safe_redirect( $redirect );
+			exit;
+		}
+		$size = isset( $file['size'] ) ? (int) $file['size'] : 0;
+		if ( $size < 1 || $size > 2_000_000 ) {
+			$this->import_notice( 'error', __( 'The export file must be under 2 MB.', 'llms-txt' ) );
+			wp_safe_redirect( $redirect );
+			exit;
+		}
+		$json = file_get_contents( $file['tmp_name'] );
+		if ( ! is_string( $json ) ) {
+			$this->import_notice( 'error', __( 'The export file could not be read.', 'llms-txt' ) );
+			wp_safe_redirect( $redirect );
+			exit;
+		}
+		try {
+			$clean = ( new Settings_Port( new Settings() ) )->parse( $json );
+		} catch ( \InvalidArgumentException $exception ) {
+			$this->import_notice( 'error', $exception->getMessage() );
+			wp_safe_redirect( $redirect );
+			exit;
+		}
+		update_option( Settings::OPTION, $clean, true );
+		( new Rewrite() )->add_rules();
+		flush_rewrite_rules( false );
+		Generator::make()->regenerate_all();
+		$this->import_notice( 'success', __( 'Settings imported and the files were regenerated.', 'llms-txt' ) );
+		wp_safe_redirect( $redirect );
+		exit;
+	}
+
+	/**
+	 * @param string $type    success or error.
+	 * @param string $message Notice text.
+	 */
+	private function import_notice( string $type, string $message ): void {
+		set_transient(
+			'llms_txt_import_notice',
+			array(
+				'type'    => 'success' === $type ? 'success' : 'error',
+				'message' => $message,
+			),
+			MINUTE_IN_SECONDS
+		);
 	}
 
 	/**

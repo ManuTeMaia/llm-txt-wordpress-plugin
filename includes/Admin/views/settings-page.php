@@ -45,6 +45,9 @@ $provider_label = $provider_labels[ $catalog->provider ] ?? $catalog->provider;
 	<h1><?php esc_html_e( 'LLMs.txt', 'llms-txt' ); ?></h1>
 	<p><?php esc_html_e( 'Publishes /llms.txt and /llms-full.txt for agents. The index is a curated map. The full file is clean Markdown for the pages that map includes.', 'llms-txt' ); ?></p>
 
+	<?php if ( ! empty( $import_notice['message'] ) ) : ?>
+		<div class="notice notice-<?php echo esc_attr( 'error' === ( $import_notice['type'] ?? '' ) ? 'error' : 'success' ); ?> is-dismissible"><p><?php echo esc_html( (string) $import_notice['message'] ); ?></p></div>
+	<?php endif; ?>
 	<?php if ( isset( $_GET['llms-updated'] ) ) : ?>
 		<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Settings saved and the files were regenerated.', 'llms-txt' ); ?></p></div>
 	<?php endif; ?>
@@ -473,6 +476,24 @@ $provider_label = $provider_labels[ $catalog->provider ] ?? $catalog->provider;
 						</td>
 					</tr>
 					<tr>
+						<th scope="row"><?php esc_html_e( 'On deletion', 'llms-txt' ); ?></th>
+						<td>
+							<input type="hidden" name="llms_txt[delete_data_on_uninstall]" value="0">
+							<label>
+								<input type="checkbox" name="llms_txt[delete_data_on_uninstall]" value="1" <?php checked( ! empty( $settings['delete_data_on_uninstall'] ) ); ?>>
+								<?php esc_html_e( 'Delete all data when the plugin is deleted', 'llms-txt' ); ?>
+							</label>
+							<p class="description"><?php esc_html_e( 'Leave this off. Deleting and reinstalling the plugin then keeps your sections, titles, and other settings. Turn it on only when you want the plugin’s options, per-post choices, caches, and files it wrote removed as well.', 'llms-txt' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="llms-txt-manifest"><?php esc_html_e( 'Update manifest', 'llms-txt' ); ?></label></th>
+						<td>
+							<input id="llms-txt-manifest" type="url" class="large-text" name="llms_txt[update_manifest_url]" value="<?php echo esc_attr( (string) ( $settings['update_manifest_url'] ?? '' ) ); ?>" placeholder="https://example.com/llms-txt.json">
+							<p class="description"><?php esc_html_e( 'Leave blank and WordPress will not offer an automatic update. When you host a JSON manifest later, paste its URL here. The plugin header already names manutemaia.com as the update host; nothing is downloaded until this field is saved.', 'llms-txt' ); ?></p>
+						</td>
+					</tr>
+					<tr>
 						<th scope="row"><?php esc_html_e( 'Link header', 'llms-txt' ); ?></th>
 						<td>
 							<input type="hidden" name="llms_txt[link_header]" value="0">
@@ -486,6 +507,23 @@ $provider_label = $provider_labels[ $catalog->provider ] ?? $catalog->provider;
 
 				<?php submit_button( __( 'Save and regenerate', 'llms-txt' ) ); ?>
 			</form>
+
+			<h2><?php esc_html_e( 'Backup', 'llms-txt' ); ?></h2>
+			<p class="description"><?php esc_html_e( 'Download the filled-in settings before you replace the plugin. Import restores them if a future install starts from an empty site.', 'llms-txt' ); ?></p>
+			<div class="llms-txt-tools">
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<input type="hidden" name="action" value="llms_txt_export">
+					<?php wp_nonce_field( 'llms_txt_export', 'llms_txt_nonce' ); ?>
+					<?php submit_button( __( 'Download settings JSON', 'llms-txt' ), 'secondary', 'submit', false ); ?>
+				</form>
+				<form method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<input type="hidden" name="action" value="llms_txt_import">
+					<?php wp_nonce_field( 'llms_txt_import', 'llms_txt_nonce' ); ?>
+					<label class="screen-reader-text" for="llms-txt-import"><?php esc_html_e( 'Settings JSON file', 'llms-txt' ); ?></label>
+					<input id="llms-txt-import" type="file" name="llms_txt_import" accept="application/json,.json">
+					<?php submit_button( __( 'Import settings', 'llms-txt' ), 'secondary', 'submit', false ); ?>
+				</form>
+			</div>
 
 			<div class="llms-txt-tools">
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">

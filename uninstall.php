@@ -1,12 +1,25 @@
 <?php
 /**
- * Removes plugin data when the plugin is deleted from wp-admin.
+ * Runs when the plugin is deleted from wp-admin.
+ *
+ * Settings, post meta, caches, and generated files stay unless
+ * "Delete all data when the plugin is deleted" was turned on.
  *
  * @package LlmsTxt
  */
 
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
+}
+
+require_once __DIR__ . '/includes/Lifecycle/Uninstall_Gate.php';
+
+$settings = get_option( 'llms_txt_settings', array() );
+
+wp_clear_scheduled_hook( 'llms_txt_daily_regenerate' );
+
+if ( ! \LlmsTxt\Lifecycle\Uninstall_Gate::should_delete( $settings ) ) {
+	return;
 }
 
 $signatures = get_option( 'llms_txt_disk_signatures', array() );
@@ -16,8 +29,6 @@ delete_option( 'llms_txt_status' );
 delete_option( 'llms_txt_version' );
 delete_option( 'llms_txt_disk_signatures' );
 delete_option( 'llms_txt_cache_keys' );
-
-wp_clear_scheduled_hook( 'llms_txt_daily_regenerate' );
 
 global $wpdb;
 $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\_transient\_llms\_txt\_%' OR option_name LIKE '\_transient\_timeout\_llms\_txt\_%'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery

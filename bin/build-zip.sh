@@ -23,6 +23,16 @@ rsync -a \
 	--exclude 'phpunit.xml.dist' \
 	"$ROOT/" "$STAGE/"
 
+test -f "$STAGE/llms-txt.php"
+php -r '
+$path = $argv[1];
+$contents = file_get_contents($path);
+if (!is_string($contents) || !preg_match("/^\\s*\\*\\s*Plugin Name:\\s*LLMs\\.txt/m", $contents)) {
+    fwrite(STDERR, "Main plugin file is missing the LLMs.txt header.\n");
+    exit(1);
+}
+' "$STAGE/llms-txt.php"
+
 rm -f "$DIST/llms-txt.zip"
 (
 	cd "$DIST"

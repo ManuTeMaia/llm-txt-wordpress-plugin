@@ -51,6 +51,8 @@ final class Settings {
 			'full_include_linked'  => true,
 			'delivery'             => 'dynamic',
 			'disk_overwrite_ack'   => false,
+			'delete_data_on_uninstall' => false,
+			'update_manifest_url'  => '',
 			'sitemap_in_optional'  => true,
 			'optional_heading'     => 'Optional',
 			'sitemap_url'          => '',
@@ -221,6 +223,8 @@ final class Settings {
 		$clean['full_include_linked'] = $this->flag( $input['full_include_linked'] ?? false );
 		$clean['delivery']            = $this->enum( $input['delivery'] ?? '', array( 'dynamic', 'disk' ), 'dynamic' );
 		$clean['disk_overwrite_ack']  = $this->flag( $input['disk_overwrite_ack'] ?? false );
+		$clean['delete_data_on_uninstall'] = $this->flag( $input['delete_data_on_uninstall'] ?? false );
+		$clean['update_manifest_url'] = $this->url( $input['update_manifest_url'] ?? '' );
 		$clean['sitemap_in_optional'] = $this->flag( $input['sitemap_in_optional'] ?? false );
 		$clean['optional_heading']    = $this->line( $input['optional_heading'] ?? 'Optional', 80 );
 		if ( '' === $clean['optional_heading'] ) {
