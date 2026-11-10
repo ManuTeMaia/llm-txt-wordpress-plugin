@@ -11,6 +11,7 @@ namespace LlmsTxt\Tests;
 
 use LlmsTxt\Content\Content_Sources;
 use LlmsTxt\Content\Published_Document_Selector;
+use LlmsTxt\Content\Template_Policy;
 use PHPUnit\Framework\TestCase;
 
 final class PublishedContentTest extends TestCase {
@@ -34,6 +35,99 @@ final class PublishedContentTest extends TestCase {
 	public function test_empty_render_can_fall_back_to_builder_json(): void {
 		$html = Content_Sources::html( '', '<p>Published builder text.</p>' );
 		self::assertStringContainsString( 'Published builder text.', $html );
+	}
+
+	public function test_single_post_template_keeps_each_posts_body_in_each_language(): void {
+		$policy   = new Template_Policy();
+		$template = array(
+			array(
+				'elType'     => 'widget',
+				'widgetType' => 'theme-post-content',
+				'settings'   => array(),
+			),
+		);
+		self::assertTrue( $policy->embeds_post_content( $template ) );
+
+		$wrapper = array(
+			'embeds_post_content' => true,
+			'html_by_language'    => array(
+				'en' => '<h1>What’s new in Terav: shaped by our first 90 users</h1><p>November 9, 2026</p>',
+				'ru' => '<h1>What’s new in Terav: shaped by our first 90 users</h1>',
+			),
+		);
+		$posts   = array(
+			array(
+				'id'       => 20,
+				'language' => 'en',
+				'own_html' => '<p>A near-miss can show where the handoff failed.</p>',
+			),
+			array(
+				'id'       => 21,
+				'language' => 'en',
+				'own_html' => '<p>Spoken case notes become a reviewable question.</p>',
+			),
+			array(
+				'id'       => 22,
+				'language' => 'ru',
+				'own_html' => '<p>Почти случившаяся ошибка показывает, где передача смены теряет деталь.</p>',
+			),
+		);
+
+		$bodies = array();
+		foreach ( $posts as $post ) {
+			$bodies[ $post['id'] ] = $policy->html_for_post( $post, $wrapper );
+		}
+
+		self::assertStringContainsString( 'near-miss', $bodies[20] );
+		self::assertStringContainsString( 'Spoken case notes', $bodies[21] );
+		self::assertStringContainsString( 'Почти случившаяся ошибка', $bodies[22] );
+		foreach ( $bodies as $html ) {
+			self::assertStringNotContainsString( 'What’s new in Terav', $html );
+		}
+	}
+
+	public function test_homepage_template_is_used_per_language_and_not_the_stale_draft(): void {
+		$policy = new Template_Policy();
+		self::assertFalse(
+			$policy->embeds_post_content(
+				array(
+					array(
+						'elType'     => 'widget',
+						'widgetType' => 'heading',
+						'settings'   => array( 'title' => 'The AI Assistant' ),
+					),
+				)
+			)
+		);
+
+		$landing = array(
+			'embeds_post_content' => false,
+			'html_by_language'    => array(
+				'en' => '<h1>The AI Assistant</h1><p>Grounded in real research.</p>',
+				'ru' => '<h1>AI-ассистент для ветеринаров</h1><p>На основе актуальных исследований.</p>',
+			),
+		);
+		$english = $policy->html_for_post(
+			array(
+				'id'       => 15,
+				'language' => 'en',
+				'own_html' => '<p>рекомендации по лечению животных</p>',
+			),
+			$landing
+		);
+		$russian = $policy->html_for_post(
+			array(
+				'id'       => 16,
+				'language' => 'ru',
+				'own_html' => '<p>рекомендации по лечению животных</p>',
+			),
+			$landing
+		);
+
+		self::assertStringContainsString( 'Grounded in real research', $english );
+		self::assertStringContainsString( 'На основе актуальных исследований', $russian );
+		self::assertStringNotContainsString( 'рекомендации по лечению животных', $english );
+		self::assertStringNotContainsString( 'рекомендации по лечению животных', $russian );
 	}
 
 	public function test_revisions_and_autosaves_are_not_published_sources(): void {

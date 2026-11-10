@@ -4,7 +4,7 @@ Tags: seo, ai, markdown, llms, yoast
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,6 +51,9 @@ No. Only published posts are eligible. Password-protected posts, private posts, 
 WPML is used when it is installed. Polylang is used otherwise. If neither is present, a post's language is taken from the first URL segment and the prefixes you configure. Choose one file with a section per language, or a separate file such as `/ru/llms.txt`.
 
 == Changelog ==
+
+= 1.1.3 =
+* Blog posts and ordinary pages use their own published body again. A theme-builder template is used only when it replaces the page, such as the homepage, and it is rendered in that post's language with the post set as the current query.
 
 = 1.1.2 =
 * Plugin site and author links point to https://terav.vet/. The llmstxt.org address remains only as the specification reference.

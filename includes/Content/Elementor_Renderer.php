@@ -10,7 +10,7 @@ namespace LlmsTxt\Content;
 use LlmsTxt\Language\Language_Switcher;
 
 /**
- * Theme-builder templates replace a page's own builder data. Autosaves are ignored.
+ * A full theme template can replace a page. A single-post template that only wraps the post cannot.
  */
 final class Elementor_Renderer {
 	private static bool $rendering = false;
@@ -54,21 +54,81 @@ final class Elementor_Renderer {
 	 * @param \WP_Post $post Published post.
 	 */
 	private function render_in_language( \WP_Post $post ): string {
-		$templates   = $this->with_singular_query(
+		$language  = $this->language_code( $post );
+		$policy    = new Template_Policy();
+		$templates = $this->with_singular_query(
 			$post,
 			function (): array {
 				return $this->matching_template_ids();
 			}
 		);
-		$document_id = $this->selector->document_id( (int) $post->ID, is_array( $templates ) ? $templates : array() );
-		$html        = $this->document_html( $document_id );
-		if ( Content_Sources::has_text( $html ) ) {
-			return $html;
+		$template_id = $this->selector->document_id( (int) $post->ID, is_array( $templates ) ? $templates : array() );
+		$payload     = null;
+		if ( $template_id !== (int) $post->ID ) {
+			$template_id = $this->translate_document( $template_id, $language );
+			$embeds      = $this->template_embeds_post_content( $template_id );
+			$rendered    = '';
+			if ( ! $embeds ) {
+				$rendered = $this->with_singular_query(
+					$post,
+					function () use ( $template_id ): string {
+						return $this->document_html( $template_id );
+					}
+				);
+			}
+			$payload = array(
+				'embeds_post_content' => $embeds,
+				'html_by_language'    => array(
+					( '' !== $language ? $language : 'default' ) => is_string( $rendered ) ? $rendered : '',
+				),
+			);
 		}
-		if ( $document_id !== (int) $post->ID ) {
-			return $this->document_html( (int) $post->ID );
+
+		return $policy->html_for_post(
+			array(
+				'id'       => (int) $post->ID,
+				'language' => $language,
+				'own_html' => '',
+			),
+			$payload
+		);
+	}
+
+	/**
+	 * Map a theme template to the translation that belongs to this language.
+	 *
+	 * @param int    $document_id Template id in the default language.
+	 * @param string $language    Post language code, or an empty string.
+	 */
+	private function translate_document( int $document_id, string $language ): int {
+		if ( $document_id <= 0 || '' === $language ) {
+			return $document_id;
 		}
-		return '';
+		if ( function_exists( 'pll_get_post' ) ) {
+			$translated = pll_get_post( $document_id, $language );
+			if ( is_numeric( $translated ) && (int) $translated > 0 ) {
+				return (int) $translated;
+			}
+		}
+		$type       = get_post_type( $document_id );
+		$type       = is_string( $type ) && '' !== $type ? $type : 'elementor_library';
+		$translated = apply_filters( 'wpml_object_id', $document_id, $type, true, $language );
+		return is_numeric( $translated ) && (int) $translated > 0 ? (int) $translated : $document_id;
+	}
+
+	/**
+	 * @param int $template_id Published theme template.
+	 */
+	private function template_embeds_post_content( int $template_id ): bool {
+		$raw = get_post_meta( $template_id, '_elementor_data', true );
+		if ( is_string( $raw ) ) {
+			$decoded = json_decode( $raw, true );
+			$raw     = is_array( $decoded ) ? $decoded : array();
+		}
+		if ( ! is_array( $raw ) ) {
+			return false;
+		}
+		return ( new Template_Policy() )->embeds_post_content( $raw );
 	}
 
 	/**
@@ -189,6 +249,8 @@ final class Elementor_Renderer {
 		$query->found_posts       = 1;
 		$wp_query                 = $query;
 		$post                     = $subject;
+		$query->in_the_loop       = true;
+		setup_postdata( $subject );
 
 		try {
 			return $callback();
