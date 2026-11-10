@@ -1,0 +1,582 @@
+# Copyright (C) 2026 Terav
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: LLMs.txt 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/workspace\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-11-10T14:17:30+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: llms-txt\n"
+
+#. Plugin Name of the plugin
+#: llms-txt.php
+#: includes/Admin/Meta_Box.php:60
+#: includes/Admin/Settings_Page.php:36
+#: includes/Admin/Settings_Page.php:37
+#: includes/Admin/views/settings-page.php:45
+msgid "LLMs.txt"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: llms-txt.php
+msgid "https://llmstxt.org/"
+msgstr ""
+
+#. Description of the plugin
+#: llms-txt.php
+msgid "Generates and serves /llms.txt and /llms-full.txt for agents, following the llmstxt.org specification."
+msgstr ""
+
+#. Author of the plugin
+#: llms-txt.php
+msgid "Terav"
+msgstr ""
+
+#: includes/Admin/Meta_Box.php:78
+msgid "Exclude from llms.txt and llms-full.txt"
+msgstr ""
+
+#: includes/Admin/Meta_Box.php:80
+msgid "Password-protected, private, and Yoast noindex content is already omitted."
+msgstr ""
+
+#: includes/Admin/Notices.php:46
+msgid "LLMs.txt is set to write the web root, but an existing file was not overwritten. Confirm overwrite on the settings screen or remove the file."
+msgstr ""
+
+#: includes/Admin/Notices.php:47
+msgid "Review delivery"
+msgstr ""
+
+#: includes/Admin/Notices.php:54
+msgid "A physical llms.txt or llms-full.txt in the web root will be served by the web server before WordPress, so the dynamic file never runs. Remove it, or switch delivery to writing the files on disk."
+msgstr ""
+
+#: includes/Admin/Notices.php:55
+msgid "Open LLMs.txt settings"
+msgstr ""
+
+#: includes/Admin/Settings_Page.php:68
+msgid "Copied"
+msgstr ""
+
+#: includes/Admin/Settings_Page.php:69
+#: includes/Admin/views/settings-page.php:471
+msgid "Copy"
+msgstr ""
+
+#: includes/Admin/Settings_Page.php:79
+#: includes/Admin/Settings_Page.php:221
+msgid "Sorry, you are not allowed to manage LLMs.txt."
+msgstr ""
+
+#: includes/Admin/views/section-card.php:20
+msgid "Section"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:22
+msgid "Up"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:23
+msgid "Down"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:24
+#: includes/Admin/views/settings-page.php:221
+#: includes/Admin/views/settings-page.php:244
+msgid "Remove"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:30
+#: includes/Admin/views/settings-page.php:281
+msgid "Heading"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:31
+msgid "Articles and updates"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:37
+msgid "Type"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:39
+msgid "Hand-written Markdown"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:40
+msgid "Automatic list"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:46
+msgid "Language"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:48
+msgid "Follow the file"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:61
+msgid "Markdown"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:65
+msgid "Lists and paragraphs. Do not add a heading — the section title above is the H2. Example item: - [Overview](https://example.com/): Short description"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:71
+msgid "Post type"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:83
+msgid "Taxonomy"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:85
+msgid "Any"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:96
+msgid "Term slugs"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:97
+msgid "articles, news"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:102
+msgid "Limit"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:108
+msgid "Order by"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:112
+msgid "Published date"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:113
+msgid "Modified date"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:114
+#: includes/Admin/views/settings-page.php:83
+#: includes/Admin/views/settings-page.php:181
+msgid "Title"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:115
+msgid "Menu order"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:126
+msgid "Direction"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:128
+msgid "Descending"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:129
+msgid "Ascending"
+msgstr ""
+
+#: includes/Admin/views/section-card.php:138
+msgid "Append a short description (Yoast meta description, otherwise the excerpt)."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:38
+msgid "WPML"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:39
+msgid "Polylang"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:40
+msgid "URL prefix fallback"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:46
+msgid "Publishes /llms.txt and /llms-full.txt for agents. The index is a curated map. The full file is clean Markdown for the pages that map includes."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:49
+msgid "Settings saved and the files were regenerated."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:52
+msgid "Regenerated just now."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:55
+msgid "Rewrite rules flushed."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:58
+msgid "Removed web-root copies that this plugin had written."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:70
+msgid "Document"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:73
+msgid "Serving"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:78
+msgid "Serve llms.txt and llms-full.txt"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:86
+msgid "Site name"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:87
+msgid "Custom title"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:90
+msgid "The H1. The llmstxt.org spec requires this and nothing else."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:94
+#: includes/Admin/views/settings-page.php:187
+msgid "Summary"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:97
+msgid "Site tagline"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:98
+msgid "Custom summary"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:99
+msgid "No summary"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:102
+msgid "Rendered as a blockquote directly under the title."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:106
+#: includes/Admin/views/settings-page.php:193
+msgid "Intro"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:109
+msgid "Free-form Markdown before the first section. Headings here are turned into bold lines so the outline stays valid."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:114
+msgid "Languages"
+msgstr ""
+
+#. translators: %s: detected multilingual provider.
+#: includes/Admin/views/settings-page.php:120
+#, php-format
+msgid "Detected: %s."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:127
+msgid "default"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:135
+msgid "File shape"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:138
+msgid "One file, no language split"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:139
+msgid "One file, a section per language"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:140
+msgid "A file per language (/ru/llms.txt)"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:142
+msgid "WPML and Polylang are used when they are active. Otherwise a post’s language is the first URL segment, matched against the prefixes below."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:146
+msgid "Root file"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:149
+msgid "Default language only"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:150
+msgid "Every language"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:152
+msgid "Used when each language has its own URL. The root /llms.txt can stay in the default language, which matches a site whose English file lives at the root and Russian content lives under /ru/."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:157
+msgid "Header overrides"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:158
+msgid "Used by language URLs such as /ru/llms.txt. A blank field keeps the main title, summary, or intro."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:173
+msgid "No additional languages detected yet. With WPML or Polylang, each language appears here. Without them, add a URL prefix below."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:200
+msgid "Prefix fallback"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:201
+msgid "Ignored while WPML or Polylang is active. Leave the prefix empty for the language that lives at the site root."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:206
+#: includes/Admin/views/settings-page.php:229
+msgid "Code"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:210
+#: includes/Admin/views/settings-page.php:233
+msgid "Name"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:214
+#: includes/Admin/views/settings-page.php:237
+msgid "URL prefix"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:219
+#: includes/Admin/views/settings-page.php:242
+msgid "Default"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:225
+msgid "Add language prefix"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:248
+msgid "Sections"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:249
+msgid "Hand-written sections are for product, workflow, and legal copy, including links that leave this site. Automatic sections list posts as “- [Title](URL): description”. Put the sections in the order they should appear. A section named Optional is always moved to the end."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:258
+msgid "Add section"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:267
+msgid "Optional"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:268
+msgid "Agents are expected to skip a section named Optional when they need a shorter context. Keep the heading as Optional unless you have a reason to change it."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:271
+msgid "Sitemap link"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:276
+msgid "Include the sitemap in the Optional section"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:285
+msgid "Link label"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:289
+msgid "Link note"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:293
+msgid "Sitemap URL"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:296
+msgid "Leave blank to use the Yoast sitemap index when Yoast is active, otherwise the core sitemap."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:300
+msgid "Extra Markdown"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:305
+msgid "Full document"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:308
+msgid "llms-full.txt"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:313
+msgid "Publish the expanded Markdown file"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:315
+msgid "Each entry has the title, URL, last-modified time, and the page converted from HTML. Elementor content is read from the builder data. Scripts, styles, and menus are dropped."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:319
+msgid "Size cap"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:322
+msgid "KB"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:326
+msgid "Linked pages"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:331
+msgid "Also expand local pages linked from hand-written sections"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:336
+msgid "Descriptions"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:339
+msgid "Length"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:346
+msgid "Omit posts Yoast marks noindex"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:353
+msgid "Hide automatic sections that have no public posts"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:360
+msgid "Delivery"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:363
+msgid "How the files are served"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:366
+msgid "Dynamic, through WordPress"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:367
+msgid "Also write llms.txt and llms-full.txt in the web root"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:369
+msgid "Choose the web root when nginx (or another server) serves .txt files itself and never asks PHP. Language URLs such as /ru/llms.txt stay dynamic, because creating a real /ru/ directory would fight WPML."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:373
+msgid "Replace an existing web-root file even if this plugin did not write it"
+msgstr ""
+
+#. translators: 1: file name, 2: present or absent.
+#: includes/Admin/views/settings-page.php:382
+#: includes/Admin/views/settings-page.php:395
+#, php-format
+msgid "%1$s: %2$s"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:385
+#: includes/Admin/views/settings-page.php:398
+msgid "present, written by this plugin"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:385
+#: includes/Admin/views/settings-page.php:398
+msgid "present, not written by this plugin"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:386
+#: includes/Admin/views/settings-page.php:399
+msgid "not in the web root"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:408
+msgid "Browser cache"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:411
+msgid "seconds"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:412
+msgid "WordPress also keeps a transient and a copy in uploads. Both are rebuilt on publish, trash, menu edits, the daily cron event, and the button below."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:416
+msgid "Link header"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:421
+msgid "Send Link: </llms.txt>; rel=\"describedby\" on front-end responses"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:427
+msgid "Save and regenerate"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:434
+msgid "Regenerate now"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:439
+msgid "Flush rewrites"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:445
+msgid "Delete managed web-root copies"
+msgstr ""
+
+#. translators: %s: localized date and time.
+#: includes/Admin/views/settings-page.php:455
+#, php-format
+msgid "Last rebuild: %s."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:460
+msgid "The files have not been built yet."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:463
+msgid "View llms.txt"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:465
+msgid "View llms-full.txt"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:468
+msgid "robots.txt"
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:469
+msgid "This block is only a recommendation. The plugin does not edit robots.txt. Allow lines belong before Disallow lines for the same crawler."
+msgstr ""
+
+#: includes/Admin/views/settings-page.php:475
+msgid "Current llms.txt"
+msgstr ""

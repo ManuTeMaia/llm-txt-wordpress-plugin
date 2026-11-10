@@ -1,0 +1,86 @@
+.llms-txt-wrap {
+	max-width: 1180px;
+}
+
+.llms-txt-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 320px;
+	gap: 24px;
+	align-items: start;
+}
+
+.llms-txt-preview {
+	position: sticky;
+	top: 32px;
+}
+
+.llms-txt-preview pre {
+	max-height: 70vh;
+	overflow: auto;
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	padding: 12px;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.llms-txt-card,
+.llms-txt-prefix {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	padding: 12px 16px;
+	margin: 0 0 12px;
+}
+
+.llms-txt-card-head,
+.llms-txt-prefix {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.llms-txt-actions {
+	display: flex;
+	gap: 6px;
+	flex-wrap: wrap;
+}
+
+.llms-txt-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	gap: 8px 16px;
+}
+
+.llms-txt-card[data-section-type="static"] .llms-txt-auto,
+.llms-txt-card[data-section-type="auto"] .llms-txt-static {
+	display: none;
+}
+
+.llms-txt-tools {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	align-items: center;
+	margin-top: 8px;
+}
+
+.llms-txt-tools form {
+	margin: 0;
+}
+
+.llms-txt-disk {
+	list-style: disc;
+	margin-left: 1.2em;
+}
+
+@media (max-width: 960px) {
+	.llms-txt-layout {
+		grid-template-columns: 1fr;
+	}
+
+	.llms-txt-preview {
+		position: static;
+	}
+}
