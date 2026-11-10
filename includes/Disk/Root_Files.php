@@ -140,8 +140,15 @@ final class Root_Files {
 	 * @param string $body File contents.
 	 */
 	private function put( string $path, string $body ): Write_Result {
+		$allowed = array( $this->root() . self::INDEX, $this->root() . self::FULL );
+		if ( ! in_array( $path, $allowed, true ) || is_link( $path ) ) {
+			return new Write_Result( false, 'Refusing to write outside the two llms text files.' );
+		}
 		$temporary = $path . '.llms-tmp';
-		$written   = file_put_contents( $temporary, $body, LOCK_EX );
+		if ( is_link( $temporary ) ) {
+			return new Write_Result( false, 'Refusing to write through a symlink.' );
+		}
+		$written = file_put_contents( $temporary, $body, LOCK_EX );
 		if ( false === $written ) {
 			return new Write_Result( false, 'Could not write a temporary copy of ' . basename( $path ) . '.' );
 		}

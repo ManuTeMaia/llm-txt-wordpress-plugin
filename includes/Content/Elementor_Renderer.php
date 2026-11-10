@@ -28,7 +28,7 @@ final class Elementor_Renderer {
 	 * @param \WP_Post $post Published post.
 	 */
 	public function render( \WP_Post $post ): string {
-		if ( self::$rendering || ! $this->elementor_loaded() || ! $this->selector->is_published_source( (string) $post->post_status, (string) $post->post_name ) ) {
+		if ( self::$rendering || \LlmsTxt\Budget::exceeded() || ! $this->elementor_loaded() || ! $this->selector->is_published_source( (string) $post->post_status, (string) $post->post_name ) ) {
 			return '';
 		}
 

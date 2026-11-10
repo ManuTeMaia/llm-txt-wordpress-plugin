@@ -17,6 +17,7 @@ require_once __DIR__ . '/includes/Lifecycle/Uninstall_Gate.php';
 $settings = get_option( 'llms_txt_settings', array() );
 
 wp_clear_scheduled_hook( 'llms_txt_daily_regenerate' );
+delete_option( 'llms_txt_regen_lock' );
 
 if ( ! \LlmsTxt\Lifecycle\Uninstall_Gate::should_delete( $settings ) ) {
 	return;

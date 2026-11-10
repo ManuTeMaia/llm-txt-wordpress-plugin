@@ -81,9 +81,12 @@ final class SettingsPortTest extends TestCase {
 	}
 
 	public function test_update_manifest_is_ignored_until_a_newer_package_is_published(): void {
-		self::assertNull( Checker::offer( '1.2.0', null ) );
-		self::assertNull( Checker::offer( '1.2.0', '{"version":"1.2.0","download_url":"https://manutemaia.com/llms-txt.zip"}' ) );
-		$offer = Checker::offer( '1.2.0', '{"version":"1.3.0","download_url":"https://manutemaia.com/llms-txt-1.3.0.zip","requires_php":"8.1"}' );
+		$manifest = 'https://manutemaia.com/llms-txt.json';
+		self::assertNull( Checker::offer( '1.2.0', $manifest, null ) );
+		self::assertNull( Checker::offer( '1.2.0', 'http://manutemaia.com/llms-txt.json', '{"version":"9.0.0","download_url":"https://manutemaia.com/llms-txt.zip","sha256":"' . str_repeat( 'ab', 32 ) . '"}' ) );
+		self::assertNull( Checker::offer( '1.2.0', $manifest, '{"version":"9.0.0","download_url":"https://evil.example/llms-txt.zip","sha256":"' . str_repeat( 'ab', 32 ) . '"}' ) );
+		self::assertNull( Checker::offer( '1.2.0', $manifest, '{"version":"9.0.0","download_url":"https://manutemaia.com/llms-txt.zip"}' ) );
+		$offer = Checker::offer( '1.2.0', $manifest, '{"version":"1.3.0","download_url":"https://manutemaia.com/llms-txt-1.3.0.zip","sha256":"' . str_repeat( 'ab', 32 ) . '","requires_php":"8.1"}' );
 		self::assertIsArray( $offer );
 		self::assertSame( '1.3.0', $offer['new_version'] );
 		self::assertSame( 'https://manutemaia.com/llms-txt-1.3.0.zip', $offer['package'] );

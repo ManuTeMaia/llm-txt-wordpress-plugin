@@ -121,7 +121,8 @@ final class Settings_Page {
 		$this->assert_manage();
 		check_admin_referer( 'llms_txt_save', 'llms_txt_nonce' );
 
-		$input = isset( $_POST['llms_txt'] ) ? wp_unslash( $_POST['llms_txt'] ) : array();
+		// The nested settings array is whitelisted in Settings::sanitize().
+		$input = isset( $_POST['llms_txt'] ) ? wp_unslash( $_POST['llms_txt'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		if ( ! is_array( $input ) ) {
 			$input = array();
 		}
@@ -221,7 +222,7 @@ final class Settings_Page {
 	public function import_settings(): void {
 		$this->assert_manage();
 		check_admin_referer( 'llms_txt_import', 'llms_txt_nonce' );
-		$file = $_FILES['llms_txt_import'] ?? null;
+		$file = isset( $_FILES['llms_txt_import'] ) ? $_FILES['llms_txt_import'] : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- file upload is checked with is_uploaded_file and a size cap, then JSON-decoded.
 		$redirect = admin_url( 'options-general.php?page=llms-txt' );
 		if ( ! is_array( $file ) || empty( $file['tmp_name'] ) || ! is_uploaded_file( $file['tmp_name'] ) ) {
 			$this->import_notice( 'error', __( 'Choose a JSON export to import.', 'llms-txt' ) );

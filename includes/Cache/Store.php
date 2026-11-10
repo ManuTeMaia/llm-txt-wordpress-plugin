@@ -107,7 +107,14 @@ final class Store {
 			return null;
 		}
 		$safe = (string) preg_replace( '/[^a-z0-9_\-]/', '', strtolower( $key ) );
-		return $directory . '/' . $safe . '.txt';
+		if ( '' === $safe ) {
+			return null;
+		}
+		$path = $directory . '/' . $safe . '.txt';
+		if ( is_link( $path ) ) {
+			return null;
+		}
+		return $path;
 	}
 
 	/**
@@ -118,13 +125,26 @@ final class Store {
 		if ( ! empty( $uploads['error'] ) || empty( $uploads['basedir'] ) ) {
 			return null;
 		}
-		$directory = trailingslashit( (string) $uploads['basedir'] ) . 'llms-txt';
+		$base = realpath( (string) $uploads['basedir'] );
+		if ( false === $base ) {
+			return null;
+		}
+		$directory = $base . '/llms-txt';
+		if ( is_link( $directory ) ) {
+			return null;
+		}
 		if ( ! is_dir( $directory ) ) {
 			if ( ! $create || ! wp_mkdir_p( $directory ) ) {
 				return null;
 			}
-			file_put_contents( $directory . '/index.php', "<?php\n// Silence is golden.\n" );
+			if ( ! is_file( $directory . '/index.html' ) ) {
+				file_put_contents( $directory . '/index.html', '' );
+			}
 		}
-		return $directory;
+		$resolved = realpath( $directory );
+		if ( false === $resolved || ! str_starts_with( $resolved, $base ) ) {
+			return null;
+		}
+		return $resolved;
 	}
 }

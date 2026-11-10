@@ -48,7 +48,7 @@ final class Settings_Port {
 	 * @return array<string, mixed>
 	 */
 	public function parse( string $json ): array {
-		$decoded = json_decode( $json, true );
+		$decoded = json_decode( $json, true, 32 );
 		if ( ! is_array( $decoded ) ) {
 			throw new \InvalidArgumentException( 'The file is not a JSON settings export.' );
 		}

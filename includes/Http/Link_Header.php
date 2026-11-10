@@ -29,14 +29,14 @@ final class Link_Header {
 			return;
 		}
 
-		$uri  = isset( $_SERVER['REQUEST_URI'] ) ? (string) $_SERVER['REQUEST_URI'] : '';
+		$uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- only the URL path is parsed.
 		$home = (string) wp_parse_url( home_url( '/' ), PHP_URL_PATH );
 		if ( null !== ( new Request_Matcher() )->match( $uri, $home ) ) {
 			return;
 		}
 
 		$url = esc_url_raw( home_url( '/llms.txt' ) );
-		if ( '' === $url ) {
+		if ( '' === $url || 1 === preg_match( '/[\r\n]/', $url ) ) {
 			return;
 		}
 		header( 'Link: <' . $url . '>; rel="describedby"', false );

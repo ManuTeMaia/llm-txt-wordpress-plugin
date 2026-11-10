@@ -158,6 +158,9 @@ final class Assembler {
 			$file_language = $this->planner->file_language( $route_language, (string) $settings['root_scope'], $catalog->default_code() );
 		}
 		foreach ( $ids as $id ) {
+			if ( \LlmsTxt\Budget::exceeded() ) {
+				break;
+			}
 			if ( isset( $seen[ $id ] ) || ! $gate->allows( $id, (bool) $settings['respect_noindex'] ) ) {
 				continue;
 			}

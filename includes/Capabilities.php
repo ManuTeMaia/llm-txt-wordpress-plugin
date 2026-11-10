@@ -18,7 +18,10 @@ final class Capabilities {
 	 */
 	public static function required(): string {
 		$capability = apply_filters( 'llms_txt_capability', self::MANAGE );
-		return is_string( $capability ) && '' !== $capability ? $capability : self::MANAGE;
+		if ( is_string( $capability ) && in_array( $capability, array( self::MANAGE, 'manage_network_options' ), true ) ) {
+			return $capability;
+		}
+		return self::MANAGE;
 	}
 
 	/**

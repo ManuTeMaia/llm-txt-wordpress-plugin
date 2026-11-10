@@ -101,6 +101,10 @@ final class LanguageAndRequestTest extends TestCase {
 		);
 		self::assertNull( $matcher->match( '/articles/llms.txt', '/' ) );
 		self::assertNull( $matcher->match( '/llms.txt.bak', '/' ) );
+		self::assertSame(
+			array( 'kind' => 'index', 'language' => null ),
+			$matcher->match( '/llms.txt?llms_lang=ru&x=1', '/' )
+		);
 	}
 
 	public function test_exclusion_policy(): void {

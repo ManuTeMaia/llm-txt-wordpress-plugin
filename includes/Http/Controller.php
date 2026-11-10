@@ -8,7 +8,6 @@
 namespace LlmsTxt\Http;
 
 use LlmsTxt\Cache\Store;
-use LlmsTxt\Generator;
 use LlmsTxt\Language\Catalog;
 use LlmsTxt\Settings;
 
@@ -45,14 +44,9 @@ final class Controller {
 		}
 
 		$key  = $match['kind'] . '_' . ( $match['language'] ?? 'root' );
-		$store = new Store();
-		$body = $store->get( $key );
+		$body = ( new Store() )->get( $key );
 		if ( null === $body ) {
-			$generator = Generator::make();
-			$body      = 'full' === $match['kind']
-				? $generator->render_full( $match['language'] )
-				: $generator->render_index( $match['language'] );
-			$store->set( $key, $body );
+			$this->unavailable();
 		}
 
 		$this->send( $body, (int) $settings['cache_max_age'] );
@@ -62,28 +56,10 @@ final class Controller {
 	 * @return array{kind:string,language:?string}|null
 	 */
 	private function match_request(): ?array {
-		$uri      = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
-		$home     = (string) wp_parse_url( home_url( '/' ), PHP_URL_PATH );
-		$from_uri = ( new Request_Matcher() )->match( $uri, $home );
-
-		$which = get_query_var( 'llms_txt' );
-		if ( is_string( $which ) && in_array( $which, array( 'index', 'full' ), true ) ) {
-			$lang     = get_query_var( 'llms_lang' );
-			$language = is_string( $lang ) && '' !== $lang ? strtolower( $lang ) : null;
-			if ( null === $language && is_array( $from_uri ) && null !== $from_uri['language'] ) {
-				$language = $from_uri['language'];
-			}
-			$kind = $which;
-			if ( is_array( $from_uri ) && 'full' === $from_uri['kind'] ) {
-				$kind = 'full';
-			}
-			return array(
-				'kind'     => $kind,
-				'language' => $language,
-			);
-		}
-
-		return $from_uri;
+		$uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- only the URL path is parsed.
+		$home = (string) wp_parse_url( home_url( '/' ), PHP_URL_PATH );
+		// The path is the only input. Query parameters cannot select a language or a file.
+		return ( new Request_Matcher() )->match( $uri, $home );
 	}
 
 	/**
@@ -93,7 +69,22 @@ final class Controller {
 		status_header( 404 );
 		header( 'Content-Type: text/plain; charset=utf-8' );
 		header( 'X-Robots-Tag: noindex' );
+		header( 'X-Content-Type-Options: nosniff' );
 		echo "Not found.\n";
+		exit;
+	}
+
+	/**
+	 * A cold cache is filled by cron, admin, or a content hook, never by this request.
+	 */
+	private function unavailable(): void {
+		status_header( 503 );
+		header( 'Content-Type: text/plain; charset=utf-8' );
+		header( 'X-Content-Type-Options: nosniff' );
+		header( 'X-Robots-Tag: noindex' );
+		header( 'Retry-After: 60' );
+		header( 'Cache-Control: no-store' );
+		echo "llms.txt is being prepared. Try again shortly.\n";
 		exit;
 	}
 
@@ -123,7 +114,8 @@ final class Controller {
 			header( 'Cache-Control: public, max-age=' . $max_age . ', must-revalidate' );
 		}
 		header( 'ETag: ' . $etag );
-		echo $body;
+		// text/plain document. Escaping would re-encode characters the file is required to contain.
+		echo $body; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		exit;
 	}
 
@@ -131,7 +123,8 @@ final class Controller {
 	 * @param string $etag Quoted MD5.
 	 */
 	private function etag_matches( string $etag ): bool {
-		$offered = isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) ? (string) wp_unslash( $_SERVER['HTTP_IF_NONE_MATCH'] ) : '';
+		$offered = isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) ? (string) wp_unslash( $_SERVER['HTTP_IF_NONE_MATCH'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- stripped to ETag characters on the next line.
+		$offered = preg_replace( '/[^A-Za-z0-9",=\/\s*-]/', '', $offered ) ?? '';
 		if ( '' === trim( $offered ) ) {
 			return false;
 		}

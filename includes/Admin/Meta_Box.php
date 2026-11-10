@@ -37,9 +37,7 @@ final class Meta_Box {
 					'type'              => 'string',
 					'single'            => true,
 					'show_in_rest'      => true,
-					'auth_callback'     => static function (): bool {
-						return current_user_can( 'edit_posts' );
-					},
+					'auth_callback'     => array( self::class, 'can_edit_meta' ),
 					'sanitize_callback' => static function ( $value ): string {
 						return '1' === (string) $value ? '1' : '';
 					},
@@ -52,9 +50,7 @@ final class Meta_Box {
 					'type'              => 'string',
 					'single'            => true,
 					'show_in_rest'      => true,
-					'auth_callback'     => static function (): bool {
-						return current_user_can( 'edit_posts' );
-					},
+					'auth_callback'     => array( self::class, 'can_edit_meta' ),
 					'sanitize_callback' => static function ( $value ): string {
 						$value = is_string( $value ) ? sanitize_text_field( $value ) : '';
 						return \LlmsTxt\Document\Markdown_Text::plain( $value );
@@ -62,6 +58,18 @@ final class Meta_Box {
 				)
 			);
 		}
+	}
+
+	/**
+	 * REST meta changes require edit permission on that specific post.
+	 *
+	 * @param mixed $allowed   Unused default.
+	 * @param mixed $meta_key  Meta key.
+	 * @param mixed $object_id Post ID.
+	 */
+	public static function can_edit_meta( mixed $allowed, mixed $meta_key, mixed $object_id ): bool {
+		unset( $allowed, $meta_key );
+		return is_numeric( $object_id ) && current_user_can( 'edit_post', (int) $object_id );
 	}
 
 	/**

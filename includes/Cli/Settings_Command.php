@@ -35,11 +35,16 @@ final class Settings_Command {
 		unset( $args );
 		$json = ( new Settings_Port( new Settings() ) )->to_json( ( new Settings() )->get(), LLMS_TXT_VERSION );
 		if ( isset( $assoc['file'] ) && is_string( $assoc['file'] ) && '' !== $assoc['file'] ) {
-			$written = file_put_contents( $assoc['file'], $json );
+			try {
+				$path = Local_Path::resolve( $assoc['file'], false );
+			} catch ( \InvalidArgumentException $exception ) {
+				\WP_CLI::error( $exception->getMessage() );
+			}
+			$written = file_put_contents( $path, $json );
 			if ( false === $written ) {
 				\WP_CLI::error( 'Could not write ' . $assoc['file'] );
 			}
-			\WP_CLI::success( 'Wrote ' . $assoc['file'] );
+			\WP_CLI::success( 'Wrote ' . $path );
 			return;
 		}
 		fwrite( STDOUT, $json );
@@ -63,8 +68,14 @@ final class Settings_Command {
 	public function import( array $args, array $assoc ): void {
 		unset( $assoc );
 		$path = $args[0] ?? '';
-		if ( '' === $path || ! is_readable( $path ) ) {
-			\WP_CLI::error( 'Give a readable JSON export: wp llms settings import <file>' );
+		try {
+			$path = Local_Path::resolve( $path, true );
+		} catch ( \InvalidArgumentException $exception ) {
+			\WP_CLI::error( $exception->getMessage() );
+		}
+		$size = filesize( $path );
+		if ( false === $size || $size > 2_000_000 ) {
+			\WP_CLI::error( 'The export file must be under 2 MB.' );
 		}
 		$json = file_get_contents( $path );
 		if ( ! is_string( $json ) ) {

@@ -82,10 +82,14 @@ final class Generator {
 	 * @return array<string, mixed>
 	 */
 	public function regenerate_all(): array {
-		if ( $this->running ) {
-			return array( 'skipped' => true );
+		if ( $this->running || ! $this->acquire_lock() ) {
+			return array(
+				'skipped' => true,
+				'error'   => '',
+			);
 		}
 		$this->running = true;
+		Budget::start( 20 );
 
 		try {
 			$settings = $this->settings->get();
@@ -102,8 +106,11 @@ final class Generator {
 			$root_index = '';
 			$root_full  = '';
 			foreach ( $variants as $language ) {
-				$index  = $this->render_index( $language );
-				$full   = $settings['full_enabled'] ? $this->render_full( $language ) : '';
+				$index = $this->render_index( $language );
+				$full  = $settings['full_enabled'] ? $this->render_full( $language ) : '';
+				if ( Budget::exceeded() && '' !== $full && ! str_contains( $full, 'generation reached the time limit' ) ) {
+					$full = rtrim( $full ) . "\n\n---\n\n> Truncated: generation reached the time limit.\n";
+				}
 				$suffix = $language ?? 'root';
 				$this->store->set( 'index_' . $suffix, $index );
 				if ( $settings['full_enabled'] ) {
@@ -167,6 +174,22 @@ final class Generator {
 			return $status;
 		} finally {
 			$this->running = false;
+			Budget::reset();
+			delete_option( 'llms_txt_regen_lock' );
 		}
+	}
+
+	/**
+	 * One rebuild at a time across PHP processes. A stale lock is stolen after two minutes.
+	 */
+	private function acquire_lock(): bool {
+		$existing = get_option( 'llms_txt_regen_lock', null );
+		if ( is_numeric( $existing ) && ( time() - (int) $existing ) < 120 ) {
+			return false;
+		}
+		if ( null !== $existing && false !== $existing ) {
+			delete_option( 'llms_txt_regen_lock' );
+		}
+		return add_option( 'llms_txt_regen_lock', time(), '', false );
 	}
 }
