@@ -68,5 +68,6 @@ final class Plugin {
 		}
 		flush_rewrite_rules( false );
 		update_option( 'llms_txt_version', LLMS_TXT_VERSION, true );
+		( new \LlmsTxt\Cron\Scheduler() )->schedule_once();
 	}
 }

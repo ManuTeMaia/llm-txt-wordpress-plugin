@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace LlmsTxt\Tests;
 
 use LlmsTxt\Cli\Local_Path;
+use LlmsTxt\Http\Serve_Decision;
 use LlmsTxt\Update\Manifest;
 use PHPUnit\Framework\TestCase;
 
@@ -22,6 +23,33 @@ final class SecurityTest extends TestCase {
 		self::assertTrue( Manifest::same_host( 'https://manutemaia.com/a.json', 'https://manutemaia.com/a.zip' ) );
 		self::assertFalse( Manifest::is_sha256( 'abc' ) );
 		self::assertTrue( Manifest::is_sha256( str_repeat( 'ab', 32 ) ) );
+	}
+
+	public function test_a_missing_transient_serves_the_durable_copy_and_queues_one_rebuild(): void {
+		$decision = new Serve_Decision();
+
+		$warm = $decision->decide( "# Current\n", "# Older\n", false );
+		self::assertSame( 200, $warm['status'] );
+		self::assertSame( "# Current\n", $warm['body'] );
+		self::assertFalse( $warm['rebuild'] );
+
+		$evicted = $decision->decide( null, "# Last good\n", false );
+		self::assertSame( 200, $evicted['status'] );
+		self::assertSame( "# Last good\n", $evicted['body'] );
+		self::assertTrue( $evicted['rebuild'] );
+
+		$already = $decision->decide( '', "# Last good\n", true );
+		self::assertSame( 200, $already['status'] );
+		self::assertFalse( $already['rebuild'] );
+
+		$never = $decision->decide( null, null, false );
+		self::assertSame( 503, $never['status'] );
+		self::assertNull( $never['body'] );
+		self::assertTrue( $never['rebuild'] );
+
+		$never_queued = $decision->decide( null, '', true );
+		self::assertSame( 503, $never_queued['status'] );
+		self::assertFalse( $never_queued['rebuild'] );
 	}
 
 	public function test_cli_paths_reject_wrappers_and_symlinks(): void {

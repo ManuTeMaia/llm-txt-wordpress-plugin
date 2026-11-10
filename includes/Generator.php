@@ -101,7 +101,6 @@ final class Generator {
 				}
 			}
 
-			$this->store->flush();
 			$stored     = array();
 			$root_index = '';
 			$root_full  = '';

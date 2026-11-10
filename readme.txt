@@ -4,7 +4,7 @@ Tags: seo, ai, markdown, llms, yoast
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,6 +55,9 @@ No. Only published posts are eligible. Password-protected posts, private posts, 
 WPML is used when it is installed. Polylang is used otherwise. If neither is present, a post's language is taken from the first URL segment and the prefixes you configure. Choose one file with a section per language, or a separate file such as `/ru/llms.txt`.
 
 == Changelog ==
+
+= 1.2.2 =
+* A public request serves the last generated file if the transient is gone, and queues one background rebuild. 503 is returned only when no copy has ever been stored. Activation and upgrade schedule that rebuild.
 
 = 1.2.1 =
 * Security pass: public requests only serve a cached file, the update manifest requires https and a checksum, and file writes refuse symlinks. Settings storage is unchanged.

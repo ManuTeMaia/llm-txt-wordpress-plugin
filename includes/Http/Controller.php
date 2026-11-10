@@ -8,6 +8,7 @@
 namespace LlmsTxt\Http;
 
 use LlmsTxt\Cache\Store;
+use LlmsTxt\Cron\Scheduler;
 use LlmsTxt\Language\Catalog;
 use LlmsTxt\Settings;
 
@@ -43,13 +44,22 @@ final class Controller {
 			$this->not_found();
 		}
 
-		$key  = $match['kind'] . '_' . ( $match['language'] ?? 'root' );
-		$body = ( new Store() )->get( $key );
-		if ( null === $body ) {
+		$key       = $match['kind'] . '_' . ( $match['language'] ?? 'root' );
+		$store     = new Store();
+		$snapshot  = $store->snapshot( $key );
+		$queued    = (bool) wp_next_scheduled( Scheduler::ONCE );
+		$decision  = ( new Serve_Decision() )->decide( $snapshot['hot'], $snapshot['durable'], $queued );
+		if ( $decision['rebuild'] ) {
+			( new Scheduler() )->schedule_once();
+		}
+		if ( 503 === $decision['status'] || ! is_string( $decision['body'] ) ) {
 			$this->unavailable();
 		}
+		if ( null === $snapshot['hot'] ) {
+			$store->reheat( $key, $decision['body'] );
+		}
 
-		$this->send( $body, (int) $settings['cache_max_age'] );
+		$this->send( $decision['body'], (int) $settings['cache_max_age'] );
 	}
 
 	/**

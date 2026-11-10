@@ -11,7 +11,7 @@ use LlmsTxt\Cron\Scheduler;
 use LlmsTxt\Http\Rewrite;
 
 /**
- * Seeds settings, flushes rewrites, and builds the first copy of the files.
+ * Seeds settings, flushes rewrites, and queues the first rebuild on cron.
  */
 final class Activator {
 	public static function activate(): void {
@@ -26,25 +26,7 @@ final class Activator {
 		( new Rewrite() )->add_rules();
 		flush_rewrite_rules( false );
 		( new Scheduler() )->schedule();
+		( new Scheduler() )->schedule_once();
 		update_option( 'llms_txt_version', LLMS_TXT_VERSION, true );
-
-		try {
-			Generator::make()->regenerate_all();
-		} catch ( \Throwable $exception ) {
-			update_option(
-				'llms_txt_status',
-				array(
-					'generated_at' => time(),
-					'error'        => $exception->getMessage(),
-					'variants'     => array(),
-					'disk'         => array(
-						'ok'      => false,
-						'message' => $exception->getMessage(),
-					),
-					'provider'     => '',
-				),
-				false
-			);
-		}
 	}
 }

@@ -17,6 +17,7 @@ require_once __DIR__ . '/includes/Lifecycle/Uninstall_Gate.php';
 $settings = get_option( 'llms_txt_settings', array() );
 
 wp_clear_scheduled_hook( 'llms_txt_daily_regenerate' );
+wp_clear_scheduled_hook( 'llms_txt_rebuild_once' );
 delete_option( 'llms_txt_regen_lock' );
 
 if ( ! \LlmsTxt\Lifecycle\Uninstall_Gate::should_delete( $settings ) ) {
@@ -30,6 +31,7 @@ delete_option( 'llms_txt_status' );
 delete_option( 'llms_txt_version' );
 delete_option( 'llms_txt_disk_signatures' );
 delete_option( 'llms_txt_cache_keys' );
+delete_option( 'llms_txt_documents' );
 
 global $wpdb;
 $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\_transient\_llms\_txt\_%' OR option_name LIKE '\_transient\_timeout\_llms\_txt\_%'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery

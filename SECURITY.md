@@ -1,4 +1,4 @@
-# Security review, LLMs.txt 1.2.1
+# Security review, LLMs.txt 1.2.2
 
 Review of 1.2.0 as shipped, then the fixes in 1.2.1. The settings option name and the shape of saved sections, titles, and language fields are unchanged, so replacing the plugin in place keeps existing settings.
 
@@ -8,7 +8,7 @@ Review of 1.2.0 as shipped, then the fixes in 1.2.1. The settings option name an
 
 A cache miss on `/llms.txt` or `/llms-full.txt` rendered every included Elementor document in the request. Anyone could force that work, including with a cache-busting query string after the transient expired.
 
-**Fix:** Public requests only read the transient or the copy under `uploads/llms-txt/`. A miss returns 503 and does not render. Regeneration runs from admin actions, WP-CLI, cron, and content hooks. A lock allows one rebuild at a time, and a 20 second budget stops a rebuild that runs too long.
+**Fix:** Public requests never render. They read a transient that does not expire, then a non-autoloaded option, then the file under `uploads/llms-txt/`. If only a durable copy remains, that copy is served and one rebuild is queued with `wp_schedule_single_event`. A 503 is returned only when no copy has ever been stored. Regeneration runs from that event, the daily cron, admin actions, WP-CLI, and content hooks. A lock allows one rebuild at a time, and a 20 second budget stops a rebuild that runs too long. The previous copy is not deleted before the new one is written.
 
 ### Update manifest could fetch arbitrary URLs and install a zip from another host
 
