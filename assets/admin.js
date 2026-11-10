@@ -112,6 +112,29 @@
 		} );
 	}
 
+	const modeSelect = document.getElementById( 'llms-txt-language-mode' );
+	const rootSelect = document.getElementById( 'llms-txt-root-scope' );
+	const modeHelp = document.getElementById( 'llms-txt-mode-help' );
+	const overrides = document.getElementById( 'llms-txt-overrides' );
+	const syncMode = function () {
+		if ( modeHelp && modeSelect ) {
+			modeHelp.setAttribute( 'data-mode', modeSelect.value );
+		}
+		if ( modeHelp && rootSelect ) {
+			modeHelp.setAttribute( 'data-root', rootSelect.value );
+		}
+		if ( overrides && modeSelect ) {
+			overrides.classList.toggle( 'is-inactive', modeSelect.value !== 'paths' );
+		}
+	};
+	if ( modeSelect ) {
+		modeSelect.addEventListener( 'change', syncMode );
+	}
+	if ( rootSelect ) {
+		rootSelect.addEventListener( 'change', syncMode );
+	}
+	syncMode();
+
 	form.addEventListener( 'submit', function () {
 		reindexPrefixes();
 		if ( list ) {

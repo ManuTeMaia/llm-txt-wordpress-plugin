@@ -36,11 +36,11 @@ If the site already has a hand-written `llms.txt` in the web root, the server wi
 | Header overrides | Title, summary, and intro for a non-default language file. Blank fields reuse the main header. |
 | Sections | Ordered list. **Hand-written Markdown** holds product, workflow, and legal copy, including links off the site. **Automatic list** prints `- [Title](URL): description` for a post type, optional taxonomy, limit, and order. |
 | Language on a section | Empty follows the file being rendered. A code such as `en` or `ru` limits that section to one language. In “section per language” mode, an automatic section with no language is split, for example `Articles (English)` and `Articles (Russian)`. |
-| Descriptions | Yoast meta description when it exists, otherwise the excerpt, otherwise a short slice of the content. |
+| Descriptions | Yoast meta description when it exists, otherwise the excerpt, otherwise the page text. A leading heading is left out, and the next block starts a new sentence. HTML entities such as `&#038;` are decoded. |
 | Optional | A final section agents may skip. It can link to the Yoast sitemap index (`/sitemap_index.xml`) or the core sitemap. |
-| llms-full.txt | Title, URL, last-modified time, language, and Markdown for each included page. Elementor pages are read from the builder data. Scripts, styles, and menus are dropped. A size cap stops the file and says it was truncated. |
+| llms-full.txt | Title, URL, last-modified time, language, and Markdown for each included page. Pages with no body text, such as an Elementor archive, are left out. Elementor pages are read from the builder data. Scripts, styles, and menus are dropped. A size cap stops the file and says it was truncated. |
 | Noindex | Yoast noindex posts are omitted. Password-protected and private posts are always omitted. |
-| Exclude checkbox | A box on each public post and page. |
+| Exclude checkbox | A box on each public post and page. The same box can replace the title, which is useful when the stored title is `HomeRU`. |
 | Delivery | Dynamic rewrite, or also write the two root files for nginx. Language URLs stay dynamic so a real `/ru/` directory is not created. |
 | Cache | Transient plus a copy in `uploads/llms-txt/`. Rebuilt when a watched post is published, updated, or trashed, when a menu changes, on the daily cron event, and from **Regenerate now**. |
 | Link header | `Link: </llms.txt>; rel="describedby"` on ordinary front-end responses. |

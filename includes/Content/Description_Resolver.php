@@ -34,6 +34,9 @@ final class Description_Resolver {
 		}
 
 		$text = (string) apply_filters( 'llms_txt_post_description', $text, $post_id );
+		if ( str_contains( $text, '<' ) ) {
+			return Markdown_Text::summarize( $text, $length );
+		}
 		return Markdown_Text::single_line( $text, $length );
 	}
 

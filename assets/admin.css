@@ -70,9 +70,38 @@
 	margin: 0;
 }
 
-.llms-txt-disk {
+.llms-txt-disk,
+.llms-txt-language-files {
 	list-style: disc;
 	margin-left: 1.2em;
+}
+
+.llms-txt-callout {
+	margin-top: 12px;
+	padding: 12px 14px;
+	background: #f0f6fc;
+	border-left: 4px solid #2271b1;
+	max-width: 720px;
+}
+
+.llms-txt-callout p:last-child,
+.llms-txt-mode-panel p {
+	margin-bottom: 0.4em;
+}
+
+#llms-txt-mode-help[data-mode="single"] .llms-txt-mode-panel:not([data-mode="single"]),
+#llms-txt-mode-help[data-mode="sections"] .llms-txt-mode-panel:not([data-mode="sections"]),
+#llms-txt-mode-help[data-mode="paths"] .llms-txt-mode-panel:not([data-mode="paths"]) {
+	display: none;
+}
+
+#llms-txt-mode-help[data-root="default"] .llms-txt-root-all,
+#llms-txt-mode-help[data-root="all"] .llms-txt-root-default {
+	display: none;
+}
+
+#llms-txt-overrides.is-inactive {
+	opacity: 0.72;
 }
 
 @media (max-width: 960px) {

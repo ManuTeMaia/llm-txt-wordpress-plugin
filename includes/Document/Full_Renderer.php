@@ -58,7 +58,7 @@ final class Full_Renderer {
 	 * @param Full_Entry $entry One page.
 	 */
 	private function render_entry( Full_Entry $entry ): string {
-		$title = trim( str_replace( array( "\r", "\n" ), ' ', $entry->title ) );
+		$title = Markdown_Text::plain( str_replace( array( "\r", "\n" ), ' ', $entry->title ) );
 		if ( '' === $title ) {
 			$title = 'Untitled';
 		}

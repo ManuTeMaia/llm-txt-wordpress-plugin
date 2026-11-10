@@ -140,6 +140,64 @@ $provider_label = $provider_labels[ $catalog->provider ] ?? $catalog->provider;
 								<option value="paths" <?php selected( $settings['language_mode'], 'paths' ); ?>><?php esc_html_e( 'A file per language (/ru/llms.txt)', 'llms-txt' ); ?></option>
 							</select>
 							<p class="description"><?php esc_html_e( 'WPML and Polylang are used when they are active. Otherwise a post’s language is the first URL segment, matched against the prefixes below.', 'llms-txt' ); ?></p>
+							<div id="llms-txt-mode-help" class="llms-txt-callout" data-mode="<?php echo esc_attr( $settings['language_mode'] ); ?>" data-root="<?php echo esc_attr( $settings['root_scope'] ); ?>">
+								<div class="llms-txt-mode-panel" data-mode="single">
+									<p><?php esc_html_e( 'Only /llms.txt is published. It uses the main title, summary, and intro. Header overrides below are ignored. If WPML or Polylang puts a language directory in front, /ru/llms.txt is the same file, not a Russian edition.', 'llms-txt' ); ?></p>
+								</div>
+								<div class="llms-txt-mode-panel" data-mode="sections">
+									<p><?php esc_html_e( 'Only /llms.txt is published. Languages are separate sections inside that one file, for example “Pages (English)” and “Pages (Русский)”. Header overrides below are ignored, so /ru/llms.txt is still this same file when the language plugin rewrites the URL.', 'llms-txt' ); ?></p>
+								</div>
+								<div class="llms-txt-mode-panel" data-mode="paths">
+									<p class="llms-txt-root-default"><?php esc_html_e( '/llms.txt is the default language only and uses the main title, summary, and intro. Each other language has its own URL, such as /ru/llms.txt, and uses the header overrides below.', 'llms-txt' ); ?></p>
+									<p class="llms-txt-root-all"><?php esc_html_e( '/llms.txt includes every language and uses the main title, summary, and intro. /ru/llms.txt is Russian only and uses the Russian header overrides.', 'llms-txt' ); ?></p>
+									<ul class="llms-txt-language-files">
+										<?php foreach ( $language_choices as $language ) : ?>
+											<?php
+											$override      = $settings['translations'][ $language->code ] ?? array();
+											$has_override  = '' !== trim( (string) ( $override['title'] ?? '' ) ) || '' !== trim( (string) ( $override['summary'] ?? '' ) ) || '' !== trim( (string) ( $override['intro'] ?? '' ) );
+											$segment       = '' !== $language->prefix ? $language->prefix : $language->code;
+											$language_path = $language->default ? '/llms.txt' : '/' . $segment . '/llms.txt';
+											?>
+											<li>
+												<?php if ( $language->default ) : ?>
+													<?php
+													echo esc_html(
+														sprintf(
+															/* translators: 1: public path, 2: language name. */
+															__( '%1$s — %2$s, main header.', 'llms-txt' ),
+															$language_path,
+															$language->name
+														)
+													);
+													?>
+												<?php elseif ( $has_override ) : ?>
+													<?php
+													echo esc_html(
+														sprintf(
+															/* translators: 1: public path, 2: language name. */
+															__( '%1$s — %2$s only, using the header overrides.', 'llms-txt' ),
+															$language_path,
+															$language->name
+														)
+													);
+													?>
+												<?php else : ?>
+													<?php
+													echo esc_html(
+														sprintf(
+															/* translators: 1: public path, 2: language name. */
+															__( '%1$s — %2$s only, but the override fields are empty, so this file starts with the same header as /llms.txt.', 'llms-txt' ),
+															$language_path,
+															$language->name
+														)
+													);
+													?>
+												<?php endif; ?>
+											</li>
+										<?php endforeach; ?>
+									</ul>
+								</div>
+							</div>
 						</td>
 					</tr>
 					<tr>
@@ -155,7 +213,8 @@ $provider_label = $provider_labels[ $catalog->provider ] ?? $catalog->provider;
 				</table>
 
 				<h3><?php esc_html_e( 'Header overrides', 'llms-txt' ); ?></h3>
-				<p class="description"><?php esc_html_e( 'Used by language URLs such as /ru/llms.txt. A blank field keeps the main title, summary, or intro.', 'llms-txt' ); ?></p>
+				<div id="llms-txt-overrides" class="<?php echo 'paths' === $settings['language_mode'] ? '' : 'is-inactive'; ?>">
+				<p class="description"><?php esc_html_e( 'These fields are used only when File shape is “A file per language”. A blank field copies that part of the main header, so an empty Russian override makes /ru/llms.txt start with the same title and summary as /llms.txt.', 'llms-txt' ); ?></p>
 				<?php
 				$override_languages = array();
 				foreach ( $language_choices as $language ) {
@@ -196,6 +255,7 @@ $provider_label = $provider_labels[ $catalog->provider ] ?? $catalog->provider;
 						</p>
 					</fieldset>
 				<?php endforeach; ?>
+				</div>
 
 				<h3><?php esc_html_e( 'Prefix fallback', 'llms-txt' ); ?></h3>
 				<p class="description"><?php esc_html_e( 'Ignored while WPML or Polylang is active. Leave the prefix empty for the language that lives at the site root.', 'llms-txt' ); ?></p>

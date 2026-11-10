@@ -4,7 +4,7 @@ Tags: seo, ai, markdown, llms, yoast
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,6 +51,13 @@ No. Only published posts are eligible. Password-protected posts, private posts, 
 WPML is used when it is installed. Polylang is used otherwise. If neither is present, a post's language is taken from the first URL segment and the prefixes you configure. Choose one file with a section per language, or a separate file such as `/ru/llms.txt`.
 
 == Changelog ==
+
+= 1.1.0 =
+* Decode HTML entities in titles and descriptions, including &#038;.
+* Descriptions taken from page content skip a leading heading and keep a separator between blocks.
+* llms-full.txt skips pages that have no body text.
+* Each post can override the title used in the files.
+* The settings screen states whether /ru/llms.txt is a separate file and whether it uses the Russian header.
 
 = 1.0.0 =
 * First release. Dynamic `/llms.txt` and `/llms-full.txt`, language files, disk delivery, caching, WP-CLI, and the robots.txt helper.

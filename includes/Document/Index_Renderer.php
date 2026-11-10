@@ -24,10 +24,10 @@ final class Index_Renderer {
 	 */
 	public function render( Index_Model $model ): string {
 		$chunks   = array();
-		$title    = trim( str_replace( array( "\r", "\n" ), ' ', $model->title ) );
+		$title    = Markdown_Text::plain( str_replace( array( "\r", "\n" ), ' ', $model->title ) );
 		$chunks[] = '# ' . ( '' !== $title ? $title : 'Untitled' );
 
-		$summary = trim( $model->summary );
+		$summary = trim( Markdown_Text::decode_entities( $model->summary ) );
 		if ( '' !== $summary ) {
 			$quoted = array();
 			foreach ( preg_split( "/\r\n|\n|\r/", $summary ) ?: array() as $line ) {
@@ -69,7 +69,7 @@ final class Index_Renderer {
 	 * @param Section_Model $section Section to render.
 	 */
 	private function render_section( Section_Model $section ): string {
-		$heading = trim( (string) preg_replace( '/\s+/u', ' ', $section->heading ) );
+		$heading = Markdown_Text::plain( $section->heading );
 		$body    = $this->text->demote_headings( $section->body, 2 );
 		if ( '' === $heading || '' === $body ) {
 			return '';

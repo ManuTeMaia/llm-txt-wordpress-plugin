@@ -72,11 +72,20 @@ final class SettingsTest extends TestCase {
 		self::assertSame( 'English intro', $russian['intro'] );
 		self::assertArrayNotHasKey( '!!', $settings['translations'] );
 
-		$description = \LlmsTxt\Document\Markdown_Text::single_line(
-			'<h2>Three steps</h2><p>Start a case.</p><script>nope()</script>',
+		$description = \LlmsTxt\Document\Markdown_Text::summarize(
+			'<h2>Clinical reasoning support, with the veterinarian in control</h2><p>Terav is an AI clinical reasoning assistant.</p><script>nope()</script>',
 			240
 		);
-		self::assertSame( 'Three steps Start a case.', $description );
+		self::assertSame( 'Terav is an AI clinical reasoning assistant.', $description );
+		self::assertSame(
+			'First sentence. Second sentence',
+			\LlmsTxt\Document\Markdown_Text::summarize( '<p>First sentence</p><p>Second sentence</p>', 240 )
+		);
+		self::assertSame( 'Evidence & Safety', \LlmsTxt\Document\Markdown_Text::plain( 'Evidence &#038; Safety' ) );
+		self::assertSame( 'Evidence & Safety', \LlmsTxt\Document\Markdown_Text::plain( 'Evidence &amp;#038; Safety' ) );
+		self::assertFalse( \LlmsTxt\Document\Markdown_Text::has_prose( '', 'Articles' ) );
+		self::assertFalse( \LlmsTxt\Document\Markdown_Text::has_prose( "# Articles\n", 'Articles' ) );
+		self::assertTrue( \LlmsTxt\Document\Markdown_Text::has_prose( "Terav reads the panel.\n", 'Articles' ) );
 	}
 
 	public function test_round_trips_a_stored_byte_cap(): void {

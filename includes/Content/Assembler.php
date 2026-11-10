@@ -231,7 +231,7 @@ final class Assembler {
 	private function link_for( \WP_Post $post, ?string $language, bool $with_description, int $length ): string {
 		$url         = $this->permalink( $post, $language );
 		$description = $with_description ? $this->descriptions->for_post( (int) $post->ID, $length ) : '';
-		return Markdown_Text::link_item( get_the_title( $post ), $url, $description );
+		return Markdown_Text::link_item( $this->display_title( $post ), $url, $description );
 	}
 
 	/**
@@ -266,14 +266,32 @@ final class Assembler {
 				return $this->extractor->markdown_for_post( $post );
 			}
 		);
+		$body  = is_string( $body ) ? trim( $body ) : '';
+		$title = $this->display_title( $post );
+		if ( ! Markdown_Text::has_prose( $body, $title ) ) {
+			return null;
+		}
 
 		return new Full_Entry(
-			wp_strip_all_tags( get_the_title( $post ) ),
+			$title,
 			$url,
 			is_string( $modified ) ? $modified : '',
 			$language,
-			is_string( $body ) ? $body : ''
+			$body
 		);
+	}
+
+	/**
+	 * Title shown in both files. A per-post override wins over the WordPress title.
+	 *
+	 * @param \WP_Post $post Post.
+	 */
+	private function display_title( \WP_Post $post ): string {
+		$custom = get_post_meta( $post->ID, '_llms_txt_title', true );
+		$raw    = is_string( $custom ) && '' !== trim( $custom ) ? $custom : (string) get_the_title( $post );
+		$title  = Markdown_Text::plain( $raw );
+		$filtered = apply_filters( 'llms_txt_post_title', $title, $post );
+		return is_string( $filtered ) && '' !== trim( $filtered ) ? Markdown_Text::plain( $filtered ) : $title;
 	}
 
 	/**

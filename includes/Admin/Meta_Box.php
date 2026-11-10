@@ -13,6 +13,8 @@ namespace LlmsTxt\Admin;
 final class Meta_Box {
 	public const META_KEY = '_llms_txt_exclude';
 
+	public const TITLE_KEY = '_llms_txt_title';
+
 	public function register_hooks(): void {
 		add_action( 'init', array( $this, 'register_meta' ) );
 		add_action( 'add_meta_boxes', array( $this, 'add' ) );
@@ -40,6 +42,22 @@ final class Meta_Box {
 					},
 					'sanitize_callback' => static function ( $value ): string {
 						return '1' === (string) $value ? '1' : '';
+					},
+				)
+			);
+			register_post_meta(
+				$type,
+				self::TITLE_KEY,
+				array(
+					'type'              => 'string',
+					'single'            => true,
+					'show_in_rest'      => true,
+					'auth_callback'     => static function (): bool {
+						return current_user_can( 'edit_posts' );
+					},
+					'sanitize_callback' => static function ( $value ): string {
+						$value = is_string( $value ) ? sanitize_text_field( $value ) : '';
+						return \LlmsTxt\Document\Markdown_Text::plain( $value );
 					},
 				)
 			);
@@ -72,7 +90,13 @@ final class Meta_Box {
 	public function render( \WP_Post $post ): void {
 		wp_nonce_field( 'llms_txt_exclude_' . $post->ID, 'llms_txt_exclude_nonce' );
 		$checked = '1' === (string) get_post_meta( $post->ID, self::META_KEY, true );
+		$custom  = (string) get_post_meta( $post->ID, self::TITLE_KEY, true );
 		?>
+		<p>
+			<label for="llms-txt-title-<?php echo esc_attr( (string) $post->ID ); ?>"><?php esc_html_e( 'Title in llms.txt', 'llms-txt' ); ?></label>
+			<input id="llms-txt-title-<?php echo esc_attr( (string) $post->ID ); ?>" class="widefat" type="text" name="llms_txt_title" value="<?php echo esc_attr( $custom ); ?>" placeholder="<?php echo esc_attr( get_the_title( $post ) ); ?>">
+		</p>
+		<p class="description"><?php esc_html_e( 'Leave blank to use the WordPress title. Use this when the stored title is a slug such as HomeRU.', 'llms-txt' ); ?></p>
 		<label>
 			<input type="checkbox" name="llms_txt_exclude" value="1" <?php checked( $checked ); ?>>
 			<?php esc_html_e( 'Exclude from llms.txt and llms-full.txt', 'llms-txt' ); ?>
@@ -101,8 +125,16 @@ final class Meta_Box {
 
 		if ( isset( $_POST['llms_txt_exclude'] ) ) {
 			update_post_meta( $post_id, self::META_KEY, '1' );
+		} else {
+			delete_post_meta( $post_id, self::META_KEY );
+		}
+
+		$title = isset( $_POST['llms_txt_title'] ) ? sanitize_text_field( wp_unslash( $_POST['llms_txt_title'] ) ) : '';
+		$title = \LlmsTxt\Document\Markdown_Text::plain( $title );
+		if ( '' === $title ) {
+			delete_post_meta( $post_id, self::TITLE_KEY );
 			return;
 		}
-		delete_post_meta( $post_id, self::META_KEY );
+		update_post_meta( $post_id, self::TITLE_KEY, $title );
 	}
 }

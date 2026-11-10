@@ -36,10 +36,11 @@ final class Controller {
 		if ( 'full' === $match['kind'] && ! $settings['full_enabled'] ) {
 			$this->not_found();
 		}
-		if ( null !== $match['language'] && 'paths' !== $settings['language_mode'] ) {
-			$this->not_found();
-		}
-		if ( null !== $match['language'] && ! ( new Catalog( new Settings() ) )->detect()->has( $match['language'] ) ) {
+		// One combined file ignores a /ru/ prefix. WPML removes that prefix before
+		// rewrite matching, so the original URL is the only place the language remains.
+		if ( 'paths' !== $settings['language_mode'] ) {
+			$match['language'] = null;
+		} elseif ( null !== $match['language'] && ! ( new Catalog( new Settings() ) )->detect()->has( $match['language'] ) ) {
 			$this->not_found();
 		}
 
@@ -61,18 +62,28 @@ final class Controller {
 	 * @return array{kind:string,language:?string}|null
 	 */
 	private function match_request(): ?array {
+		$uri      = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+		$home     = (string) wp_parse_url( home_url( '/' ), PHP_URL_PATH );
+		$from_uri = ( new Request_Matcher() )->match( $uri, $home );
+
 		$which = get_query_var( 'llms_txt' );
 		if ( is_string( $which ) && in_array( $which, array( 'index', 'full' ), true ) ) {
-			$lang = get_query_var( 'llms_lang' );
+			$lang     = get_query_var( 'llms_lang' );
+			$language = is_string( $lang ) && '' !== $lang ? strtolower( $lang ) : null;
+			if ( null === $language && is_array( $from_uri ) && null !== $from_uri['language'] ) {
+				$language = $from_uri['language'];
+			}
+			$kind = $which;
+			if ( is_array( $from_uri ) && 'full' === $from_uri['kind'] ) {
+				$kind = 'full';
+			}
 			return array(
-				'kind'     => $which,
-				'language' => is_string( $lang ) && '' !== $lang ? strtolower( $lang ) : null,
+				'kind'     => $kind,
+				'language' => $language,
 			);
 		}
 
-		$uri  = isset( $_SERVER['REQUEST_URI'] ) ? (string) $_SERVER['REQUEST_URI'] : '';
-		$home = (string) wp_parse_url( home_url( '/' ), PHP_URL_PATH );
-		return ( new Request_Matcher() )->match( $uri, $home );
+		return $from_uri;
 	}
 
 	/**

@@ -23,6 +23,7 @@ global $wpdb;
 $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\_transient\_llms\_txt\_%' OR option_name LIKE '\_transient\_timeout\_llms\_txt\_%'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 delete_post_meta_by_key( '_llms_txt_exclude' );
+delete_post_meta_by_key( '_llms_txt_title' );
 
 $uploads = wp_upload_dir( null, false );
 if ( empty( $uploads['error'] ) && ! empty( $uploads['basedir'] ) ) {
