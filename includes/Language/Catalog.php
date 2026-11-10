@@ -7,6 +7,7 @@
 
 namespace LlmsTxt\Language;
 
+use LlmsTxt\Http\Site_Home;
 use LlmsTxt\Settings;
 
 /**
@@ -169,10 +170,7 @@ final class Catalog {
 	 */
 	private function prefix_from_url( string $url ): string {
 		$path = trim( (string) parse_url( $url, PHP_URL_PATH ), '/' );
-		$home = '';
-		if ( function_exists( 'home_url' ) ) {
-			$home = trim( (string) parse_url( home_url( '/' ), PHP_URL_PATH ), '/' );
-		}
+		$home = trim( ( new Site_Home() )->path(), '/' );
 		if ( '' !== $home && str_starts_with( $path, $home ) ) {
 			$path = trim( substr( $path, strlen( $home ) ), '/' );
 		}

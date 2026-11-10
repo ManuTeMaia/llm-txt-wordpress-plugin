@@ -22,7 +22,7 @@ The manifest URL was requested with `wp_remote_get`, which follows redirects and
 
 `llms_txt` and `llms_lang` were public query variables, so `/?llms_txt=full&llms_lang=ru` could change which document was served.
 
-**Fix:** Only the URL path is consulted. `/llms.txt?llms_lang=ru&x=1` is the root index. The language prefix in the path is the only language switch.
+**Fix:** Only the URL path is consulted. `/llms.txt?llms_lang=ru&x=1` is the root index. The language directory in that path is the language switch. The home path subtracted from it is the stored site URL, not `home_url()`, because WPML and Polylang prefix `home_url()` with the current language. The request URI is captured when this plugin loads, before that directory can be removed. If the captured path has no language directory and WPML or Polylang's current language is a different known language, that language selects the cached file. A query parameter still cannot.
 
 ### REST meta changes were not tied to the post
 

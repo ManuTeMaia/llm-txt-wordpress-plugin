@@ -29,9 +29,7 @@ final class Link_Header {
 			return;
 		}
 
-		$uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- only the URL path is parsed.
-		$home = (string) wp_parse_url( home_url( '/' ), PHP_URL_PATH );
-		if ( null !== ( new Request_Matcher() )->match( $uri, $home ) ) {
+		if ( null !== ( new Request_Matcher() )->match( Request_Uri::original(), ( new Site_Home() )->path() ) ) {
 			return;
 		}
 
